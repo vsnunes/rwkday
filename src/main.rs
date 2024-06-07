@@ -1,4 +1,5 @@
 use std::env;
+mod date;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -10,4 +11,6 @@ fn main() {
     let day: u8 = date[2].parse().unwrap();
 
     println!("Date: {year}/{month}/{day}");
+    let weekday: f32 = date::weekday(year, month, day);
+    println!("Weekday number: {}", weekday);
 }
