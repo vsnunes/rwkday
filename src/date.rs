@@ -31,6 +31,20 @@ impl fmt::Display for Weekday {
     }
 }
 
+impl Weekday {
+    pub fn as_number(&self) -> u8 {
+        match self {
+            Weekday::Monday => 1,
+            Weekday::Tuesday => 2,
+            Weekday::Wednesday => 3,
+            Weekday::Thursday => 4,
+            Weekday::Friday => 5,
+            Weekday::Saturday => 6,
+            Weekday::Sunday => 7,
+        }
+    }
+}
+
 impl Date {
     pub fn create_date(year: u16, month: u8, day: u8) -> Self {
         Self { year, month, day }
