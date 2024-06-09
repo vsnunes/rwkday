@@ -5,12 +5,12 @@ fn main() {
     let args: Vec<String> = env::args().collect();
 
     let raw_date = &args[1];
-    let date: Vec<&str> = raw_date.split("/").collect();
-    let year: u16 = date[0].parse().unwrap();
-    let month: u8 = date[1].parse().unwrap();
-    let day: u8 = date[2].parse().unwrap();
+    let parsed_date: Vec<&str> = raw_date.split("/").collect();
+    let date = date::Date::create_date(
+        parsed_date[0].parse().unwrap(),
+        parsed_date[1].parse().unwrap(),
+        parsed_date[2].parse().unwrap(),
+    );
 
-    println!("Date: {year}/{month}/{day}");
-    let weekday: f32 = date::weekday(year, month, day);
-    println!("Weekday number: {}", weekday);
+    println!("Weekday: {}", date.weekday());
 }
