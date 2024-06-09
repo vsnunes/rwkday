@@ -17,6 +17,12 @@ pub enum Weekday {
     Sunday,
 }
 
+impl fmt::Display for Date {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}-{:02}-{:02}", self.year, self.month, self.day)
+    }
+}
+
 impl fmt::Display for Weekday {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -50,6 +56,14 @@ impl Date {
         Self { year, month, day }
     }
 
+    pub fn create_month(year: u16, month: u8) -> Self {
+        Self {
+            year,
+            month,
+            day: 1,
+        }
+    }
+
     pub fn weekday(&self) -> Weekday {
         let month: f64 = if self.month < 3 {
             12.0 + self.month as f64
@@ -80,6 +94,23 @@ impl Date {
             6.0 => Weekday::Saturday,
             7.0 => Weekday::Sunday,
             _ => panic!("Invalid weekday"),
+        }
+    }
+
+    fn is_leap_year(&self) -> bool {
+        if self.year % 100 == 0 && self.year % 400 != 0 {
+            false
+        } else {
+            self.year % 4 == 0
+        }
+    }
+
+    pub fn month_length(&self) -> u8 {
+        match self.month {
+            1 | 3 | 5 | 7 | 8 | 10 | 12 => return 31,
+            4 | 6 | 9 | 11 => return 30,
+            2 => return if self.is_leap_year() { 29 } else { 28 },
+            _ => panic!("Invalid month"),
         }
     }
 }
