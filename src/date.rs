@@ -35,6 +35,7 @@ impl Date {
     pub fn create_date(year: u16, month: u8, day: u8) -> Self {
         Self { year, month, day }
     }
+
     pub fn weekday(&self) -> Weekday {
         let month: f64 = if self.month < 3 {
             12.0 + self.month as f64
