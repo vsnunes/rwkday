@@ -18,23 +18,36 @@ struct Args {
     #[arg(short, long, default_value_t = false)]
     game: bool,
 
-    /// Enables tutorial for game mode. Ignored unless -g or --game is also set
+    /// Enables tips for game mode. Ignored unless -g or --game is also set
     #[arg(short, long, default_value_t = false)]
-    tutorial: bool,
+    tips: bool,
 }
 
 fn main() {
     let args = Args::parse();
 
+    let parsed_date: Vec<&str> = args.date.split("-").collect();
+    let date = date::Date::create_date(
+        parsed_date[0].parse().unwrap(),
+        parsed_date[1].parse().unwrap(),
+        parsed_date[2].parse().unwrap(),
+    );
+
     if args.game {
-        let guess_date = game::generate_random_date((1900, 2100));
+        let guess_date = date; //game::generate_random_date((1900, 2100));
         let mut user_weekday_guess = String::new();
 
         println!("Guess the weekday of {guess_date}");
 
-        io::stdin()
-            .read_line(&mut user_weekday_guess)
-            .expect("You need to provide a weekday in numeric format");
+        if args.tips {
+            println!("================================");
+            game::display_tips(&guess_date, false);
+            println!("================================");
+        }
+
+        io::stdin().read_line(&mut user_weekday_guess).expect(
+            "You need to provide a weekday in numeric format (1 - Monday, ..., 7 - Sunday)",
+        );
 
         let user_weekday_guess: u8 = user_weekday_guess
             .trim()
@@ -49,15 +62,6 @@ fn main() {
         }
         return;
     }
-
-    let parsed_date: Vec<&str> = args.date.split("-").collect();
-    let date = date::Date::create_date(
-        parsed_date[0].parse().unwrap(),
-        parsed_date[1].parse().unwrap(),
-        parsed_date[2].parse().unwrap(),
-    );
-
-    println!("Date: {date}");
 
     if args.number {
         println!("Weekday: {}", date.weekday().as_number());

@@ -2,9 +2,9 @@
 use std::fmt;
 
 pub struct Date {
-    year: u16,
-    month: u8,
-    day: u8,
+    pub year: u16,
+    pub month: u8,
+    pub day: u8,
 }
 
 pub enum Weekday {
@@ -97,7 +97,7 @@ impl Date {
         }
     }
 
-    fn is_leap_year(&self) -> bool {
+    pub fn is_leap_year(&self) -> bool {
         if self.year % 100 == 0 && self.year % 400 != 0 {
             false
         } else {
