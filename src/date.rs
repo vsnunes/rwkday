@@ -40,13 +40,13 @@ impl fmt::Display for Weekday {
 impl Weekday {
     pub fn as_number(&self) -> u8 {
         match self {
+            Weekday::Sunday => 0,
             Weekday::Monday => 1,
             Weekday::Tuesday => 2,
             Weekday::Wednesday => 3,
             Weekday::Thursday => 4,
             Weekday::Friday => 5,
             Weekday::Saturday => 6,
-            Weekday::Sunday => 7,
         }
     }
 }
@@ -64,45 +64,38 @@ impl Date {
         }
     }
 
+    // Based on RFC 3339 Appendix B
     pub fn weekday(&self) -> Weekday {
-        let month: f64 = if self.month < 3 {
-            12.0 + self.month as f64
-        } else {
-            self.month as f64
-        };
+        let day = self.day as i16;
+        let mut month = self.month as i16;
+        let mut year = self.year as i16;
 
-        let month = ((13.0 * (month + 1.0)) / 5.0).floor();
-        let year = self.year as f64 % 100.0;
-        let zero_based_century = (self.year as f64 / 100.0).floor();
+        // adjust months so February is the last one
+        month = month - 2;
+        if month < 1 {
+            month = month + 12;
+            year = year - 1;
+        }
 
-        let weekday = (self.day as f64
-            + month
-            + year
-            + (year / 4.0).floor()
-            + (zero_based_century / 4.0).floor()
-            - 2.0 * zero_based_century)
-            % 7.0;
+        let cent = year / 100;
+        year = year % 100;
 
-        let weekday = ((weekday + 5.0) % 7.0) + 1.0;
+        let weekday = ((26 * month - 2) / 10 + day + year + year / 4 + cent / 4 + 5 * cent) % 7;
 
         match weekday {
-            1.0 => Weekday::Monday,
-            2.0 => Weekday::Tuesday,
-            3.0 => Weekday::Wednesday,
-            4.0 => Weekday::Thursday,
-            5.0 => Weekday::Friday,
-            6.0 => Weekday::Saturday,
-            7.0 => Weekday::Sunday,
+            0 => Weekday::Sunday,
+            1 => Weekday::Monday,
+            2 => Weekday::Tuesday,
+            3 => Weekday::Wednesday,
+            4 => Weekday::Thursday,
+            5 => Weekday::Friday,
+            6 => Weekday::Saturday,
             _ => panic!("Invalid weekday"),
         }
     }
 
     pub fn is_leap_year(&self) -> bool {
-        if self.year % 100 == 0 && self.year % 400 != 0 {
-            false
-        } else {
-            self.year % 4 == 0
-        }
+        self.year % 4 == 0 && (self.year % 100 != 0 || self.year % 400 == 0)
     }
 
     pub fn month_length(&self) -> u8 {
