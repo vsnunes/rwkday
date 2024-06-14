@@ -188,10 +188,14 @@ pub fn display_tips(date: &Date, show_solution: bool) {
         date.month, month, month_code
     );
 
-    println!("{} + {} + {} = ?", month_code, date.day, year_code);
+    if date.is_leap_year() {
+        println!(" !! Remember that {} is a leap year!", date.year);
+    }
+
+    println!("{} + {} + {} (% 7) = ?", month_code, date.day, year_code);
 
     if show_solution {
-        let sum = month_code + date.day + year_code as u8;
+        let sum = (month_code + date.day + year_code as u8) % 7;
         println!("{} therefore {}", sum, Weekday::from(sum));
     }
 }
