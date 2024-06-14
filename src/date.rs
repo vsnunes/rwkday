@@ -1,6 +1,8 @@
 //! Computes the Weekday of a date
+use std::cmp::Ordering;
 use std::fmt;
 
+#[derive(Eq, PartialEq)]
 pub struct Date {
     pub year: u16,
     pub month: u8,
@@ -20,6 +22,36 @@ pub enum Weekday {
 impl fmt::Display for Date {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}-{:02}-{:02}", self.year, self.month, self.day)
+    }
+}
+
+impl Ord for Date {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.year > other.year {
+            Ordering::Greater
+        } else if self.year < other.year {
+            Ordering::Less
+        } else {
+            if self.month > other.month {
+                Ordering::Greater
+            } else if self.month < other.month {
+                Ordering::Less
+            } else {
+                if self.day > other.day {
+                    Ordering::Greater
+                } else if self.day < other.day {
+                    Ordering::Less
+                } else {
+                    Ordering::Equal
+                }
+            }
+        }
+    }
+}
+
+impl PartialOrd for Date {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
 
@@ -70,6 +102,15 @@ impl Date {
         let mut month = self.month as i16;
         let mut year = self.year as i16;
 
+        assert!(
+            self > &Date {
+                year: 0,
+                month: 3,
+                day: 1
+            },
+            "Only for dates after March 1st 0000"
+        );
+
         // adjust months so February is the last one
         month = month - 2;
         if month < 1 {
@@ -95,6 +136,7 @@ impl Date {
     }
 
     pub fn is_leap_year(&self) -> bool {
+        assert!(self.year >= 1000, "Must use 4 digit year.");
         self.year % 4 == 0 && (self.year % 100 != 0 || self.year % 400 == 0)
     }
 
