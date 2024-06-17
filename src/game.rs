@@ -169,19 +169,9 @@ pub fn generate_random_date(year_interval: (u16, u16)) -> Date {
 pub fn display_tips(date: &Date, show_solution: bool) {
     println!("Formula: Month Code + Day + Year Code = Day of Week");
 
-    let mut year_code: u16 = 0;
-
-    if let 2000..=2003 = date.year {
-        println!("Begining of the century:");
-        for year in 2000..=2003 {
-            println!("{} = {}", year, year - 2000);
-        }
-
-        year_code = date.year - 2000;
-    }
-
     let month = Month::from(date.month);
     let month_code = month.as_number(date.is_leap_year());
+    let year_code = year_code(date);
 
     println!(
         "The code for {} is {}, therefore {}.",
@@ -198,4 +188,66 @@ pub fn display_tips(date: &Date, show_solution: bool) {
         let sum = (month_code + date.day + year_code as u8) % 7;
         println!("{} therefore {}", sum, Weekday::from(sum));
     }
+}
+
+pub fn year_code(date: &Date) -> u16 {
+    let year_code: u16;
+
+    assert!(
+        date.year >= 2000 && date.year <= 2096,
+        "Only 21th century years up to 2096 are supported"
+    );
+
+    let last_two_digits = date.year % 100;
+
+    if last_two_digits % 12 == 0 {
+        year_code = last_two_digits / 12;
+        println!(
+            "Last two digits of {} is divisible by 12 :), therefore {}",
+            date.year, year_code
+        );
+    } else {
+        println!("Last two digits of {} is not divisible by 12 :(", date.year);
+    }
+
+    let last_two_digits = match last_two_digits {
+        28..=52 => last_two_digits - 28,
+        56..=80 => last_two_digits - 56,
+        84..=96 => last_two_digits - 84,
+        _ => last_two_digits,
+    };
+
+    let year_code = match last_two_digits {
+        0..=3 => {
+            println!("{} is mostly 0s", date.year);
+            0 + last_two_digits
+        }
+        4..=7 => {
+            println!("{} Count: 4...5...", date.year);
+            5 + last_two_digits - 4
+        }
+        8..=11 => {
+            println!("{} Right half of 8 looks like 3", date.year);
+            3 + last_two_digits - 8
+        }
+        12..=15 => {
+            println!("12 + 12 = 1");
+            1 + last_two_digits - 12
+        }
+        16..=19 => {
+            println!("16 ends in 6");
+            6 + last_two_digits - 16
+        }
+        20..=23 => {
+            println!("2 + 0 + 2 + 0 = 4");
+            4 + last_two_digits - 20
+        }
+        24 => {
+            println!("24 + 12 = 2");
+            2
+        }
+        _ => panic!("Invalid last two digits after reduction"),
+    };
+
+    year_code
 }

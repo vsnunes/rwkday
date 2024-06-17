@@ -21,10 +21,26 @@ struct Args {
     /// Enables tips for game mode. Ignored unless -g or --game is also set
     #[arg(short, long, default_value_t = false)]
     tips: bool,
+
+    /// Computes year code for given year
+    #[arg(short, long, default_value_t = 0)]
+    year: u16,
 }
 
 fn main() {
     let args = Args::parse();
+
+    if args.year != 0 {
+        println!(
+            "{}",
+            game::year_code(&date::Date {
+                year: args.year,
+                month: 1,
+                day: 1,
+            })
+        );
+        return;
+    }
 
     let parsed_date: Vec<&str> = args.date.split("-").collect();
     let date = date::Date::create_date(
