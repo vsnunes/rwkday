@@ -210,24 +210,30 @@ pub fn year_code(date: &Date) -> u16 {
         println!("Last two digits of {} is not divisible by 12 :(", date.year);
     }
 
-    let last_two_digits = match last_two_digits {
-        28..=52 => last_two_digits - 28,
-        56..=80 => last_two_digits - 56,
-        84..=96 => last_two_digits - 84,
-        _ => last_two_digits,
+    let diff = match last_two_digits {
+        28..=52 => 28,
+        56..=80 => 56,
+        84..=96 => 84,
+        _ => 0,
     };
+
+    let last_two_digits = last_two_digits - diff;
+
+    if diff != 0 {
+        println!("Too big, can be reduced to {}", last_two_digits);
+    }
 
     let year_code = match last_two_digits {
         0..=3 => {
-            println!("{} is mostly 0s", date.year);
+            println!("2000 is mostly 0s");
             0 + last_two_digits
         }
         4..=7 => {
-            println!("{} Count: 4...5...", date.year);
+            println!("2004 Count: 4...5...");
             5 + last_two_digits - 4
         }
         8..=11 => {
-            println!("{} Right half of 8 looks like 3", date.year);
+            println!("2008 Right half of 8 looks like 3");
             3 + last_two_digits - 8
         }
         12..=15 => {
@@ -249,5 +255,5 @@ pub fn year_code(date: &Date) -> u16 {
         _ => panic!("Invalid last two digits after reduction"),
     };
 
-    year_code
+    year_code % 7
 }
