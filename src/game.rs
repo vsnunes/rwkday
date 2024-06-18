@@ -194,8 +194,8 @@ pub fn year_code(date: &Date) -> u16 {
     let year_code: u16;
 
     assert!(
-        date.year >= 2000 && date.year <= 2096,
-        "Only 21th century years up to 2096 are supported"
+        date.year >= 1600 && date.year <= 2399,
+        "Year must be within 1600 and 2096"
     );
 
     let last_two_digits = date.year % 100;
@@ -255,5 +255,17 @@ pub fn year_code(date: &Date) -> u16 {
         _ => panic!("Invalid last two digits after reduction"),
     };
 
-    year_code % 7
+    let century = match date.year {
+        1600..=1699 => 0,
+        1700..=1799 => 5,
+        1800..=1899 => 3,
+        1900..=1999 => 1,
+        2000..=2099 => 0,
+        2100..=2199 => 5,
+        2200..=2299 => 3,
+        2300..=2399 => 1,
+        _ => 0,
+    };
+
+    year_code + century % 7
 }
